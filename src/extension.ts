@@ -55,6 +55,9 @@ class ViewProvider implements vscode.WebviewViewProvider {
     const scriptMainUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "media", "main.js")
     );
+    const scriptDebugUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "media", "debug.js")
+    );
 
     // Use a nonce to only allow a specific script to be run.
     const nonce = getNonce();
@@ -67,10 +70,8 @@ class ViewProvider implements vscode.WebviewViewProvider {
             Use a content security policy to only allow loading images from https or from our extension directory,
             and only allow scripts that have a specific nonce.
           -->
-        <meta
-          http-equiv="Content-Security-Policy"
-          content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';"
-        />
+        <meta http-equiv="Content-Security-Policy" 
+        content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link href="${styleHighlightUri}" rel="stylesheet" />
         <link href="${styleResetUri}" rel="stylesheet" />
@@ -78,56 +79,30 @@ class ViewProvider implements vscode.WebviewViewProvider {
         <link href="${styleMainUri}" rel="stylesheet" />
         
         <title>Cat Colors</title>
-        </head>
-        <body>
-        <input type="text" placeholder="Enter here" />
-        <button class="add-color-button">Add Color</button>
-        <ul id="code-list">
-        <pre>
-          <code>
-#hello world
-print(31)
-          </code>
-        </pre>
-        <pre>
-          <code>
-#hello world
-print(31)
-          </code>
-        </pre>
-        <pre>
-          <code>
-#hello world
-print(31)
-          </code>
-        </pre>
-        <pre>
-          <code>
-#hello world
-print(31)
-          </code>
-        </pre>
-        <pre>
-          <code>
-#hello world
-print(31)
-          </code>
-        </pre>
-        <pre>
-          <code>
-#hello world
-print(31)
-          </code>
-        </pre>
-        </ul>
+      </head>
+      <body>
+        <input id="searchinp" type="text" placeholder="Enter here" />
+        <button id="searchbtn">Search</button>
         
+        <ul id="code-list"></ul>
+        <script nonce="${nonce}" charset="utf-8" src="${scriptDebugUri}"></script>
         <script nonce="${nonce}" charset="utf-8" src="${scriptHighlightUri}"></script>
         <script nonce="${nonce}" charset="utf-8" src="${scriptMainUri}"></script>
+        <script nonce="${nonce}" charset="utf-8" src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+        <lottie-player
+          src="https://assets5.lottiefiles.com/packages/lf20_dkvy24ug.json"
+          background="transparent"
+          speed="1"
+          style="width: 64px; height: 64px"
+          loop
+          autoplay
+        ></lottie-player>
       </body>
     </html>
     `;
   }
 }
+
 function getNonce() {
   let text = "";
   const possible =

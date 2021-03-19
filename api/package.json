@@ -1,0 +1,23 @@
+{
+  "name": "algo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node -r dotenv/config test",
+    "dev": "nodemon -r dotenv/config app.js --ext js,ts,hbs,css,mjs,json"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "node-html-parser": "^3.0.3",
+    "pg": "^8.5.1",
+    "redis": "^3.0.2"
+  },
+  "devDependencies": {
+    "htmlparser-benchmark": "^1.1.3",
+    "nodemon": "^2.0.7"
+  }
+}
