@@ -1,7 +1,10 @@
 body {
   background-color: transparent;
 }
-
+.err-txt {
+  color: var(--vscode-errorForeground);
+  visibility: hidden;
+}
 /*
   unfortunately margin auto doesnt work 
   for block elements in some cases, so 

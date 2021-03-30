@@ -36,17 +36,18 @@ function saveOpt() {
  * @param {number} end ending offset (excluded)
  * @returns array of codes
  */
-async function GET(txt, start, end) {
+async function GET(txt, lang, start, end) {
     const client = await pool.connect();
     try {
         const tmpres = await client.query(ISTHEREANYTABLE);
         if (tmpres.rowCount === 0) {
             await client.query(CREATETABLE);
         }
-        const res = await db.GET(txt, start, end);
-        if (res.rowCount === 0) {
-            const codes = await getReq(txt, start, end);
-            await db.PUT(txt, start, end, codes);
+
+        const res = await db.GET(txt, lang, start, end);
+        if (res.rowCount !== OPTIONS.load) {
+            const codes = await getReq(txt, lang, start, end);
+            await db.PUT(txt, lang, start, end, codes);
             return codes;
         } else return res.rows.map(x => x.lines);
     } catch (error) {
@@ -56,12 +57,12 @@ async function GET(txt, start, end) {
     }
 }
 
-async function getReq(txt, start, end) {
+async function getReq(txt, lang, start, end) {
     const addComments = (OPTIONS.comments) ? "" : "/?Q";
     let promises = [];
     for (let index = start; index < end; index++) {
         promises.push(new Promise((resolve, reject) => {
-            https.get(`https://cht.sh/${OPTIONS.lang}/${txt}/${index}${addComments}`, async res => {
+            https.get(`https://cht.sh/${lang}/${txt}/${index}${addComments}`, async res => {
                 let data = "";
 
                 res.on("data", chunk => {

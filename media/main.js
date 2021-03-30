@@ -1,9 +1,11 @@
 //DOM elements
 const html = document.getElementsByTagName("html")[0],
     htmlstyle = getComputedStyle(html),
-    searchinp = document.getElementById("searchinp"),
+    typeinp = document.getElementById("typeinp"),
+    chooseinp = document.getElementById("chooseinp"),
     searchbtn = document.getElementById("searchbtn"),
-    codelist = document.getElementById("code-list");
+    codelist = document.getElementById("code-list"),
+    errTxts = document.getElementsByClassName("err-txt");
 
 window.onload = () => {
     loadingSpinner = document.getElementsByTagName("lottie-player")[0];
@@ -16,7 +18,8 @@ var OPTIONS,
     txt,
     start,
     end,
-    proceedLoad = 0,
+    proceedLoad = true,
+    init = false,
     wheelinterval,
     MAX_WHEEL_COUNT = 100,
     loadingSpinner;
@@ -95,10 +98,10 @@ function setupCopy() {
     });
 }
 
-async function getPage(txt, start, end) {
+async function getPage(txt, lang, start, end) {
     try {
         console.log(start, end);
-        const res = await ((await fetch(`http://localhost:3000/code/${txt}/${start}/${end}`)).json());
+        const res = await ((await fetch(`http://localhost:3000/code/${txt}/${lang}/${start}/${end}`)).json());
         const codes = res.map((x, i) => codeHTML(x.join(""), start + i + 1));
         return codes;
     } catch (error) {
@@ -132,9 +135,9 @@ function reset() {
     start = 0, end = OPTIONS.load;
 }
 
-async function update(txt, start, end) {
+async function update(txt, lang, start, end) {
     const t0 = performance.now();
-    const codes = (await getPage(txt, start, end)).join("");
+    const codes = (await getPage(txt, lang, start, end)).join("");
     const reqinterval = performance.now() - t0;
 
     if (wheelinterval) {
@@ -151,34 +154,56 @@ async function update(txt, start, end) {
 
 document.addEventListener("wheel", async function () {
     const docheight = getDocHeight();
-    if (proceedLoad < MAX_WHEEL_COUNT) {
-        if (docheight <= getScrollY() + window.innerHeight + THRESHOLD) { //bottom
-            window.scrollTo(0, docheight - MAX_WHEEL_COUNT * THRESHOLD);
-            await update(txt, start, end);
-            start = end;
-            end += OPTIONS.load;
-        }
-        ++proceedLoad;
 
-    } else {
-        proceedLoad = 0;
+    if (init && proceedLoad && docheight <= getScrollY() + window.innerHeight + THRESHOLD) { //bottom
+        proceedLoad = false;
+        window.scrollTo(0, docheight - (MAX_WHEEL_COUNT >> 6) * THRESHOLD);
+        await update(txt, lang, start, end);
+        proceedLoad = true;
+        start = end;
+        end += OPTIONS.load;
     }
+
     var time = this._time;
     var timestamp = new Date().getTime();
     if (time)
         wheelinterval = timestamp - time;
     this._time = timestamp;
 });
-
+function errState(obj) {
+    obj.style.outlineColor = prop("--vscode-inputValidation-errorBorder");
+    obj.style.backgroundColor = prop("--vscode-inputValidation-errorBackground");
+}
+function normState(obj) {
+    obj.style.outlineColor = prop("--vscode-input-border");
+    obj.style.backgroundColor = prop("--vscode-input-background");
+}
 searchbtn.addEventListener("click", async function () {
-    txt = searchinp.value;
+    normState(typeinp);
+    errTxts[0].style.visibility = "hidden";
+    normState(chooseinp);
+    errTxts[1].style.visibility = "hidden";
+
+    txt = typeinp.value;
+    lang = chooseinp.value;
+
+    let valid = true;
+
     if (txt === "") {
-        DEBUG("input field is empty");
-    } else {
+        errState(typeinp);
+        errTxts[0].style.visibility = "visible";
+        valid = false;
+
+    } if (lang === "item") {
+        errState(chooseinp);
+        errTxts[1].style.visibility = "visible";
+        valid = false;
+    } if (valid) {
         searchbtn.disabled = true;
         reset();
         loadingSpinner.style.display = "block";//show spinner
-        await update(txt, start, end);
+        await update(txt, lang, start, end);
+        init = true;
         loadingSpinner.style.display = "none";//hide spinner
         start = end;
         end += OPTIONS.load;

@@ -8,28 +8,29 @@ const { Pool } = require('pg'),
     CREATETABLE = `
 CREATE TABLE IF NOT EXISTS ${process.env.PGTABLE} (
     txt VARCHAR,
+    lang VARCHAR,
     index INT,
     lines VARCHAR[],
-    PRIMARY KEY(txt, index)
+    PRIMARY KEY(txt, lang, index)
 );`,
     DROPTABLE = `DROP TABLE IF EXISTS ${process.env.PGTABLE};`,
-    INSERTINTO = (txt, index, arr) => {
+    INSERTINTO = (txt, lang, index, arr) => {
         return {
-            text: `INSERT INTO ${process.env.PGTABLE} VALUES ($1, $2, $3) ON CONFLICT DO NOTHING;`,
-            values: [txt, index, arr]
+            text: `INSERT INTO ${process.env.PGTABLE} VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING;`,
+            values: [txt, lang, index, arr]
         };
     },
-    GETENTRIES = (txt, start, end) => {
+    GETENTRIES = (txt, lang, start, end) => {
         return {
             text: `
 SELECT lines FROM ${process.env.PGTABLE}
-WHERE txt = $1 AND index >= $2 AND index < $3`,
-            values: [txt, start, end]
+WHERE txt = $1 AND lang = $2 AND index >= $3 AND index < $4`,
+            values: [txt, lang, start, end]
         };
     },
     pool = new Pool();
 
-async function PUTpromise(txt, start, end, codes) {
+async function PUTpromise(txt, lang, start, end, codes) {
     return new Promise((resolve, reject) => {
         pool.connect((err, client) => {
             if (err) {
@@ -37,7 +38,7 @@ async function PUTpromise(txt, start, end, codes) {
                 reject(err);
             }
             for (let index = start, helperindex = 0; index < end; index++, helperindex++) {
-                client.query(INSERTINTO(txt, index, codes[helperindex]), (err, res) => {
+                client.query(INSERTINTO(txt, lang, index, codes[helperindex]), (err, res) => {
                     if (err) {
                         DEBUG(err);
                         reject(err);
@@ -48,12 +49,12 @@ async function PUTpromise(txt, start, end, codes) {
         });
     });
 }
-async function PUT(txt, start, end, codes) {
+async function PUT(txt, lang, start, end, codes) {
 
     const client = await pool.connect();
     try {
         for (let index = start, helperindex = 0; index < end; index++, helperindex++) {
-            await client.query(INSERTINTO(txt, index, codes[helperindex]));
+            await client.query(INSERTINTO(txt, lang, index, codes[helperindex]));
         }
     } catch (error) {
         DEBUG(error);
@@ -61,10 +62,11 @@ async function PUT(txt, start, end, codes) {
         client.release();
     }
 }
-async function GET(txt, start, end) {
+async function GET(txt, lang, start, end) {
     const client = await pool.connect();
+    console.log(lang);
     try {
-        return (await client.query(GETENTRIES(txt, start, end)));
+        return (await client.query(GETENTRIES(txt, lang, start, end)));
     } catch (error) {
         DEBUG(error);
     } finally {
