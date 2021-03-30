@@ -15,12 +15,29 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "configuration": [
+      {
+        "title": "algo.sh",
+        "properties": {
+          "algo-sh.load": {
+            "type": "number",
+            "default": 2,
+            "description": "Specifies how many code blocks to load in a page"
+          },
+          "algo-sh.comments": {
+            "type": "boolean",
+            "default": true,
+            "description": "Specifies whether or not to have comments in code texts"
+          }
+        }
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
           "id": "algo-sh-sidebar-view",
           "title": "algo.sh",
-          "icon": "./media/checklist.svg"
+          "icon": "./media/algo.png"
         }
       ]
     },
@@ -30,7 +47,7 @@
           "type": "webview",
           "id": "algo-sh-sidebar",
           "name": "algo.sh",
-          "icon": "./media/checklist.svg",
+          "icon": "./media/algo.png",
           "contextualTitle": "algo.sh"
         }
       ]

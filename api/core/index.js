@@ -18,7 +18,7 @@ const {
     fs = require("fs"),
     { parse } = require("node-html-parser"),
     path = require("path"),
-    PATH_OPT = path.join(__dirname, "options.json"),
+    PATH_OPT = path.join(__dirname, "..", "api", "core", "options.json"),
     OPTIONS = JSON.parse(
         fs.readFileSync(PATH_OPT, "utf8")
     ),

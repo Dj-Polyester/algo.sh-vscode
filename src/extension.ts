@@ -1,12 +1,14 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 
+import * as fs from "fs";
 import * as vscode from "vscode";
 import * as path from "path";
 import { DEBUG } from "./debug";
 import { exec } from "child_process";
 import * as os from "os";
-
+const PATH_OPT = path.join(__dirname, "..", "api", "core", "options.json");
+var OPTIONS = JSON.parse(fs.readFileSync(PATH_OPT, "utf8"));
 process.chdir(path.join(__dirname, "..", "api"));
 console.log("Current working directory: ", process.cwd());
 
@@ -231,6 +233,14 @@ export async function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "algo-sh" is now active!');
+
+  //set options
+  var OPTIONS = JSON.parse(fs.readFileSync(PATH_OPT, "utf8"));
+  const config = vscode.workspace.getConfiguration();
+  OPTIONS.load = config.get("algo-sh.load");
+  OPTIONS.comments = config.get("algo-sh.comments");
+
+  fs.writeFileSync(PATH_OPT, JSON.stringify(OPTIONS));
 
   const provider = new ViewProvider(context.extensionUri);
 
