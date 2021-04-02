@@ -5,7 +5,8 @@
 algo.sh is a search engine for algorithms. It uses [cht.sh](https://cht.sh/) in the background, a cheatsheet tool for terminal. Found entries are returned in pages. Each entry is
 a cheatsheet item (e.g. an instance for an algorithm) written by real individuals. For integration (.i.e atom, vim), you may check [algo.sh API](https://github.com/Dj-Polyester/algo.sh)
 
-![Preview PNG](media/preview.png)
+![Preview PNG1](media/preview1.png)
+![Preview PNG2](media/preview2.png)
 [Preview GIF](https://media.giphy.com/media/kcwpc5o0enZVdcG7S3/giphy.gif)
 
 > ##### Help Wanted
@@ -16,25 +17,14 @@ a cheatsheet item (e.g. an instance for an algorithm) written by real individual
 ## Contents
 
 - [Installation](#installation)
-- [Extension Settings](#extension-settings)
-- [Known Issues](#known-issues)
-- [Release Notes](#release-notes)
+- [Usage](#usage)
 - [Contributing](#contributing)
   - [Contributing to repository](#contributing-to-repository)
   - [Contributing to database](#contributing-to-database)
+- [Extension Settings](#extension-settings)
+- [Known Issues](#known-issues)
+- [Release Notes](#release-notes)
 - [Credits](#credits)
-
-## Contributing
-
-### Contributing to repository
-
-It is simple. Steps:
-
-1. Open an issue
-2. If you are allowed, commit your changes
-3. Wait your changes to be published
-
-Do not dm spam our contributors please.
 
 ## Installation
 
@@ -76,6 +66,25 @@ systemctl enable [postgresServiceName]
 
 > Note that the extension is tested in Ubuntu Linux only. Nodejs and vscode API are cross-compatible; however, the commands above are not tested in platforms other than Ubuntu Linux. For
 > Ubuntu/Debian users, `postgresServiceName` is `postgresql.service`.
+
+## Usage
+
+1. Open the extension by clicking the logo on the left on the sidebar.
+2. Type the cheatsheet you want to search for, then choose the language from the dropdown menu
+3. Click _Search_ button
+4. Results will appear, scroll and enjoy :)
+
+## Contributing
+
+### Contributing to repository
+
+It is simple. Steps:
+
+1. Open an issue
+2. If you are allowed, commit your changes
+3. Wait your changes to be published
+
+Do not dm spam our contributors please.
 
 ### Contributing to database
 
