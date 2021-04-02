@@ -7,7 +7,15 @@ import * as path from "path";
 import { DEBUG } from "./debug";
 import { exec } from "child_process";
 import * as os from "os";
-const PATH_OPT = path.join(__dirname, "..", "api", "core", "options.json");
+let config: vscode.WorkspaceConfiguration;
+
+const PATH_OPT: string = path.join(
+  __dirname,
+  "..",
+  "api",
+  "core",
+  "options.json"
+);
 var OPTIONS = JSON.parse(fs.readFileSync(PATH_OPT, "utf8"));
 process.chdir(path.join(__dirname, "..", "api"));
 console.log("Current working directory: ", process.cwd());
@@ -49,8 +57,22 @@ import "../api";
 
 class ViewProvider implements vscode.WebviewViewProvider {
   private _view?: vscode.WebviewView;
-
+  private _theme?: string;
+  private _config?: vscode.WorkspaceConfiguration;
   constructor(private readonly _extensionUri: vscode.Uri) {}
+
+  public updateWebviewView() {
+    //set highlight
+    this._config = vscode.workspace.getConfiguration();
+    this._theme = this._config.get("algo-sh.highlight");
+
+    //set options
+    var OPTIONS = JSON.parse(fs.readFileSync(PATH_OPT, "utf8"));
+    OPTIONS.load = this._config.get("algo-sh.load");
+    fs.writeFileSync(PATH_OPT, JSON.stringify(OPTIONS));
+
+    this._view.webview.html = this._getHtmlForWebview(this._view.webview);
+  }
 
   public resolveWebviewView(
     webviewView: vscode.WebviewView,
@@ -66,18 +88,18 @@ class ViewProvider implements vscode.WebviewViewProvider {
       localResourceRoots: [this._extensionUri],
     };
 
-    webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+    this.updateWebviewView();
 
-    webviewView.webview.onDidReceiveMessage((data) => {
-      switch (data.type) {
-        case "colorSelected": {
-          vscode.window.activeTextEditor?.insertSnippet(
-            new vscode.SnippetString(`#${data.value}`)
-          );
-          break;
-        }
-      }
-    });
+    // webviewView.webview.onDidReceiveMessage((data) => {
+    //   switch (data.type) {
+    //     case "colorSelected": {
+    //       vscode.window.activeTextEditor?.insertSnippet(
+    //         new vscode.SnippetString(`#${data.value}`)
+    //       );
+    //       break;
+    //     }
+    //   }
+    // });
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
@@ -92,7 +114,12 @@ class ViewProvider implements vscode.WebviewViewProvider {
       vscode.Uri.joinPath(this._extensionUri, "media", "main.css")
     );
     const styleHighlightUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "media", "styles", "dark.css")
+      vscode.Uri.joinPath(
+        this._extensionUri,
+        "media",
+        "styles",
+        this._theme + ".css"
+      )
     );
     const scriptHighlightUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "media", "highlight.pack.js")
@@ -234,15 +261,16 @@ export async function activate(context: vscode.ExtensionContext) {
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "algo-sh" is now active!');
 
-  //set options
-  var OPTIONS = JSON.parse(fs.readFileSync(PATH_OPT, "utf8"));
-  const config = vscode.workspace.getConfiguration();
-  OPTIONS.load = config.get("algo-sh.load");
-  OPTIONS.comments = config.get("algo-sh.comments");
-
-  fs.writeFileSync(PATH_OPT, JSON.stringify(OPTIONS));
-
   const provider = new ViewProvider(context.extensionUri);
+
+  vscode.workspace.onDidChangeConfiguration((event) => {
+    provider.updateWebviewView();
+
+    // let affected = event.affectsConfiguration("riot.compiler");
+    // if (affected) {
+    //   // rebuild cpp project settings
+    // }
+  });
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider("algo-sh-sidebar", provider)

@@ -8,14 +8,13 @@ body {
 /*
   unfortunately margin auto doesnt work 
   for block elements in some cases, so 
-  had to use 300px :( 
+  had to use a number :( 
   which may not work for every screen 
   to center vertically of course
   */
 lottie-player {
   display: none;
-  margin: auto;
-  margin-top: 300px;
+  margin: 75% auto;
 }
 
 .copy {

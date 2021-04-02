@@ -1,3 +1,4 @@
+const OPTIONS = require("../core/options");
 const { DEBUG } = require('../debug');
 
 const { Pool } = require('pg'),
@@ -64,7 +65,6 @@ async function PUT(txt, lang, start, end, codes) {
 }
 async function GET(txt, lang, start, end) {
     const client = await pool.connect();
-    console.log(lang);
     try {
         return (await client.query(GETENTRIES(txt, lang, start, end)));
     } catch (error) {

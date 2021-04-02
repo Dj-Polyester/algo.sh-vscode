@@ -15,13 +15,8 @@ const {
         DEBUGARR,
     } = require("../debug"),
     https = require("https"),
-    fs = require("fs"),
     { parse } = require("node-html-parser"),
-    path = require("path"),
-    PATH_OPT = path.join(__dirname, "..", "api", "core", "options.json"),
-    OPTIONS = JSON.parse(
-        fs.readFileSync(PATH_OPT, "utf8")
-    ),
+    { OPTIONS, PATH_OPT, fs } = require("./options"),
     db = require("../db");
 function saveOpt() {
     try {
@@ -58,11 +53,10 @@ async function GET(txt, lang, start, end) {
 }
 
 async function getReq(txt, lang, start, end) {
-    const addComments = (OPTIONS.comments) ? "" : "/?Q";
     let promises = [];
     for (let index = start; index < end; index++) {
         promises.push(new Promise((resolve, reject) => {
-            https.get(`https://cht.sh/${lang}/${txt}/${index}${addComments}`, async res => {
+            https.get(`https://cht.sh/${lang}/${txt}/${index}`, async res => {
                 let data = "";
 
                 res.on("data", chunk => {

@@ -19,7 +19,6 @@ var OPTIONS,
     start,
     end,
     proceedLoad = true,
-    init = false,
     wheelinterval,
     MAX_WHEEL_COUNT = 100,
     loadingSpinner;
@@ -67,6 +66,7 @@ const codeHTML = (code,
 (async function () {
     try {
         OPTIONS = await ((await fetch("http://localhost:3000/options")).json());
+        console.log(OPTIONS);
     } catch (error) {
         DEBUG(error);
     }
@@ -155,7 +155,7 @@ async function update(txt, lang, start, end) {
 document.addEventListener("wheel", async function () {
     const docheight = getDocHeight();
 
-    if (init && proceedLoad && docheight <= getScrollY() + window.innerHeight + THRESHOLD) { //bottom
+    if (proceedLoad && docheight <= getScrollY() + window.innerHeight + THRESHOLD) { //bottom
         proceedLoad = false;
         window.scrollTo(0, docheight - (MAX_WHEEL_COUNT >> 6) * THRESHOLD);
         await update(txt, lang, start, end);
@@ -178,6 +178,20 @@ function normState(obj) {
     obj.style.outlineColor = prop("--vscode-input-border");
     obj.style.backgroundColor = prop("--vscode-input-background");
 }
+function load() {
+    searchbtn.disabled = true;
+    reset();
+    loadingSpinner.style.display = "block";//show spinner
+    disableScroll();
+}
+function finishload() {
+    loadingSpinner.style.display = "none";//hide spinner
+    start = end;
+    end += OPTIONS.load;
+    searchbtn.disabled = false;
+    enableScroll();
+}
+
 searchbtn.addEventListener("click", async function () {
     normState(typeinp);
     errTxts[0].style.visibility = "hidden";
@@ -199,19 +213,13 @@ searchbtn.addEventListener("click", async function () {
         errTxts[1].style.visibility = "visible";
         valid = false;
     } if (valid) {
-        searchbtn.disabled = true;
-        reset();
-        loadingSpinner.style.display = "block";//show spinner
+        load();
         await update(txt, lang, start, end);
-        init = true;
-        loadingSpinner.style.display = "none";//hide spinner
-        start = end;
-        end += OPTIONS.load;
-        searchbtn.disabled = false;
+        finishload();
     }
 });
-/////////////////////////////////////////////////
-//https://stackoverflow.com/a/4770179/10713877///
+////////////////////////////////////////////////
+//https://stackoverflow.com/a/4770179/10713877//
 // left: 37, up: 38, right: 39, down: 40,
 // spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
 var keys = { 37: 1, 38: 1, 39: 1, 40: 1 };
