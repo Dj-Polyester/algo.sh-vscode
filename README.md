@@ -1,6 +1,6 @@
 # algo-sh for vscode
 
-![algo.sh logo](media/algo.svg)
+![algo.sh logo](media/algo.png)
 
 algo.sh is a search engine for algorithms. It uses [cht.sh](https://cht.sh/) in the background, a cheatsheet tool for terminal. Found entries are returned in pages. Each entry is
 a cheatsheet item (e.g. an instance for an algorithm) written by real individuals. For integration (.i.e atom, vim), you may check [algo.sh API](https://github.com/Dj-Polyester/algo.sh)

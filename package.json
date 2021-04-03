@@ -1,10 +1,15 @@
 {
+  "publisher": "algo-sh",
   "name": "algo-sh",
   "displayName": "algo.sh",
   "description": "",
   "version": "0.1.0",
   "engines": {
     "vscode": "^1.54.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dj-Polyester/algo.sh-vscode"
   },
   "categories": [
     "Other"
