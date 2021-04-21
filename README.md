@@ -137,6 +137,10 @@ This extension contributes the following settings:
 
 - Alpha release
 
+### 0.1.2
+
+- Change license (from MIT to GPLv3)
+
 ## Credits
 
 - Codebase from @Dj-Polyester
