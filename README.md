@@ -147,6 +147,8 @@ This extension contributes the following settings:
 
 ## Credits
 
+- Entries from [cht.sh](https://cht.sh/)
+
 - Codebase from @Dj-Polyester
 
 - Spinning wheel animation by Sergio Lozano from [www.lottiefiles.com](www.lottiefiles.com)
