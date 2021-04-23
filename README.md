@@ -141,6 +141,10 @@ This extension contributes the following settings:
 
 - Change license (from MIT to GPLv3)
 
+### 0.1.3
+
+- Configure icon for marketplace
+
 ## Credits
 
 - Codebase from @Dj-Polyester

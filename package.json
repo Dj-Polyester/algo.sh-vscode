@@ -3,7 +3,8 @@
   "name": "algo-sh",
   "displayName": "algo.sh",
   "description": "",
-  "version": "0.1.2",
+  "icon": "media/algo.png",
+  "version": "0.1.3",
   "engines": {
     "vscode": "^1.54.0"
   },
